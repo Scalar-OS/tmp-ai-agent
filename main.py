@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from explorer import getExperiences
 
 app = Flask(__name__)
 
@@ -10,7 +11,9 @@ def submit():
     
     # Example: Do something with the data and return a response
     # For simplicity, let's just echo the data back
-    return jsonify({"received_data": data}), 200
+    # urn:li:fsd_profile:ACoAACFu2dwBKeLWKdWMoUPhcrajdY3fOHrq4oE
+    exps = getExperiences(urn_id="urn:li:fsd_profile:ACoAACFu2dwBKeLWKdWMoUPhcrajdY3fOHrq4oE")
+    return jsonify({"exps": exps}), 200
 
 if __name__ == '__main__':
     app.run(port=5000)
