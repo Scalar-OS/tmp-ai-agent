@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from explorer import getExperiences
+from person_finder import process_crm_contact
 
 app = Flask(__name__)
 
@@ -11,9 +11,16 @@ def submit():
     
     # Example: Do something with the data and return a response
     # For simplicity, let's just echo the data back
-    # urn:li:fsd_profile:ACoAACFu2dwBKeLWKdWMoUPhcrajdY3fOHrq4oE
-    exps = getExperiences(urn_id="urn:li:fsd_profile:ACoAACFu2dwBKeLWKdWMoUPhcrajdY3fOHrq4oE")
-    return jsonify({"exps": exps}), 200
+    contact_data = {
+      'contact_name': "Daniel Olea",
+      'contact_email': "dani@scalaros.com",
+      'company_name': "Scalar",
+      'contact_linkedin_url': None,
+    }
+
+    result = process_crm_contact(contact_data)
+
+    return jsonify({"exps": result}), 200
 
 if __name__ == '__main__':
     app.run(port=5000)
