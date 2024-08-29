@@ -44,6 +44,7 @@ def submit(account_id):
 
       return jsonify({"processed_contacts": processed_contacts}), 200
     except Exception as e:
+      print(f"An error occurred: {e}")
       return jsonify({"message": "Error in server"}), 500
     
 
