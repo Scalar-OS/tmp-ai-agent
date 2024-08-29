@@ -1,15 +1,12 @@
 from linkedin_api import Linkedin
 import difflib
 import time
-from dotenv import load_dotenv
 import os
 import json
 from explorer import getExperiences
 from openai import OpenAI
 import re
 import traceback
-
-load_dotenv()
 
 client = OpenAI(
     api_key=os.environ.get("OPENAI_LOCAL_API_KEY")

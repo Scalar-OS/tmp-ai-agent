@@ -1,26 +1,49 @@
 from flask import Flask, request, jsonify
 from person_finder import process_crm_contact
+from pymongo import MongoClient
+from dotenv import load_dotenv
+import os
+from bson import ObjectId
 
 app = Flask(__name__)
 
-@app.route('/submit', methods=['POST'])
-def submit():
-    data = request.get_json()  # Get JSON data from the request
+# Load environment variables from .env file
+load_dotenv()
+
+# Initialize MongoDB client
+mongo_client = MongoClient(os.environ.get('MONGO_CONNECTION_STRING'))
+db = mongo_client.get_database('scalar-sales')  # Replace with your database name
+contacts_collection = db.get_collection('contacts')
+
+@app.route('/accounts/<account_id>/submit', methods=['POST'])
+def submit(account_id):
+    data = request.get_json()
     if not data:
         return jsonify({"message": "No data received"}), 400
     
-    # Example: Do something with the data and return a response
-    # For simplicity, let's just echo the data back
-    contact_data = {
-      'contact_name': "Daniel Olea",
-      'contact_email': "dani@scalaros.com",
-      'company_name': "Scalar",
-      'contact_linkedin_url': None,
-    }
+    # Convert account_id to ObjectId
+    try:
+        account_object_id = ObjectId(account_id)
+    except Exception as e:
+        return jsonify({"message": "Invalid accountId format"}), 400
 
-    result = process_crm_contact(contact_data)
+    # Query MongoDB for contacts with the given account_id
+    contacts = contacts_collection.find({"accountId": account_object_id})
+    processed_contacts = []
 
-    return jsonify({"exps": result}), 200
+    for contact in contacts:
+        contact_data = {
+            'contact_name': contact.get('name'),
+            'contact_email': contact.get('email'),
+            'company_name': contact.get('company'),
+            'contact_linkedin_url': contact.get('linkedin_url'),
+        }
+
+        # Process each contact
+        processed_contact = process_crm_contact(contact_data)
+        processed_contacts.append(processed_contact)
+
+    return jsonify({"processed_contacts": processed_contacts}), 200
 
 if __name__ == '__main__':
     app.run(port=5000)
