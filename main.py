@@ -28,15 +28,15 @@ def submit(account_id):
         return jsonify({"message": "Invalid accountId format"}), 400
 
     # Query MongoDB for contacts with the given account_id
-    contacts = contacts_collection.find({"accountId": account_object_id})
+    contacts = contacts_collection.find({"accountId": account_object_id}).limit(300)
     processed_contacts = []
 
     for contact in contacts:
         contact_data = {
-            'contact_name': contact.get('name'),
-            'contact_email': contact.get('email'),
-            'company_name': contact.get('company'),
-            'contact_linkedin_url': contact.get('linkedin_url'),
+            'contact_name': contact.get('rawObject', {}).get('full_name'),
+            'contact_email': contact.get('rawObject', {}).get('email'),
+            'company_name': contact.get('rawObject', {}).get('company_name'),
+            'contact_linkedin_url': contact.get('rawObject', {}).get('linkedin_url', None),
         }
 
         # Process each contact
