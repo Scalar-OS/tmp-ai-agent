@@ -17,11 +17,10 @@ contacts_collection = db.get_collection('contacts')
 
 @app.route('/accounts/<account_id>/submit', methods=['POST'])
 def submit(account_id):
-    data = request.get_json()
-    if not data:
-        return jsonify({"message": "No data received"}), 400
+    # data = request.get_json()
+    # if not data:
+    #     return jsonify({"message": "No data received"}), 400
     
-    # Convert account_id to ObjectId
     try:
         account_object_id = ObjectId(account_id)
     except Exception as e:
