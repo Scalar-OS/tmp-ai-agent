@@ -71,12 +71,12 @@ def find_largest_non_null_image(data):
 
     return max_value
 
-def process_crm_contact(row):
+def process_crm_contact(row, user, password):
     # If this starts to fail, go to ~/.linkedin_api/cookies and delete the file with your email
     # https://github.com/tomquirk/linkedin-api/issues/357
     api = Linkedin(
-        os.getenv('LINKEDIN_USER'), 
-        os.getenv('LINKEDIN_PWD')
+        user, 
+        password
     )
 
     ai_rationale = None

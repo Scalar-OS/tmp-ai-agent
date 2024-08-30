@@ -1,11 +1,10 @@
-from flask import Flask, request, jsonify
+import os
+import argparse
+import getpass
 from person_finder import process_crm_contact
 from pymongo import MongoClient
 from dotenv import load_dotenv
-import os
 from bson import ObjectId
-
-app = Flask(__name__)
 
 # Load environment variables from .env file
 load_dotenv()
@@ -15,38 +14,53 @@ mongo_client = MongoClient(os.environ.get('MONGO_CONNECTION_STRING'))
 db = mongo_client.get_database('scalar-sales')  # Replace with your database name
 contacts_collection = db.get_collection('contacts')
 
-@app.route('/accounts/<account_id>/submit', methods=['POST'])
-def submit(account_id):
-    # data = request.get_json()
-    # if not data:
-    #     return jsonify({"message": "No data received"}), 400
+
+# Function to process the given company ID
+def process_company_contacts(company_id, user, password):
     try:
-      try:
-        account_object_id = ObjectId(account_id)
-      except Exception as e:
-        return jsonify({"message": "Invalid accountId format"}), 400
+        try:
+            account_object_id = ObjectId(company_id)
+        except Exception as e:
+            print("Invalid company ID format.")
+            return
 
-      # Query MongoDB for contacts with the given account_id
-      contacts = contacts_collection.find({"accountId": account_object_id}).limit(300)
-      processed_contacts = []
+        # Query MongoDB for contacts with the given account_id
+        contacts = contacts_collection.find({"accountId": account_object_id}).limit(300)
+        processed_contacts = []
 
-      for contact in contacts:
-        contact_data = {
-          'contact_name': contact.get('rawObject', {}).get('full_name'),
-          'contact_email': contact.get('rawObject', {}).get('email'),
-          'company_name': contact.get('rawObject', {}).get('company_name'),
-          'contact_linkedin_url': contact.get('rawObject', {}).get('linkedin_url', None),
-        }
+        for index, contact in enumerate(contacts):
+            print(f"Starting processing of contact #{index}")
+            contact_data = {
+                'contact_name': contact.get('rawObject', {}).get('full_name'),
+                'contact_email': contact.get('rawObject', {}).get('email'),
+                'company_name': contact.get('rawObject', {}).get('company_name'),
+                'contact_linkedin_url': contact.get('rawObject', {}).get('linkedin_url', None),
+            }
 
-        # Process each contact
-        processed_contact = process_crm_contact(contact_data)
-        processed_contacts.append(processed_contact)
+            print(f"Processing contact: {contact_data}")
 
-      return jsonify({"processed_contacts": processed_contacts}), 200
+            # Process each contact
+            processed_contact = process_crm_contact(contact_data, user, password)
+            processed_contacts.append(processed_contact)
+
+        print("Processed Contacts:")
+        for contact in processed_contacts:
+            print(contact)
     except Exception as e:
-      print(f"An error occurred: {e}")
-      return jsonify({"message": "Error in server"}), 500
-    
+        print(f"An error occurred: {e}")
+
+
+def main():
+    accountId = input("Account id: ")
+
+    user = input("Enter user: ")
+    password = getpass.getpass("Enter password: ")
+
+    # Note: Use the user and password as needed in your logic
+    print(f"user: {user}, password: ***")
+
+    process_company_contacts(accountId, user, password)
+
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    main()
