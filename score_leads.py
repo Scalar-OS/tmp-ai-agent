@@ -178,7 +178,7 @@ def main():
     db = connect_to_mongodb(mongo_uri, db_name)
 
     try:
-        company_id = ObjectId(company_id)
+        company_id = ObjectId(accountId)
     except Exception as e:
         print("Invalid company ID format.")
         return
