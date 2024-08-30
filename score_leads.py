@@ -3,16 +3,12 @@ from pymongo import MongoClient
 import re
 from dotenv import load_dotenv
 import os
-from bson import regex
-from linkedin_api import Linkedin
-from explorer import getExperiences
 import json
 from openai import OpenAI
 import traceback
 import time
 from datetime import datetime
 from Levenshtein import distance as levenshtein_distance
-import getpass
 from bson import ObjectId
 
 load_dotenv()
@@ -20,11 +16,6 @@ load_dotenv()
 client = OpenAI(
     api_key=os.environ.get("OPENAI_LOCAL_API_KEY")
 )
-
-# Step 1: Read the CSV File
-def read_csv(file_path):
-    df = pd.read_csv(file_path)
-    return df
 
 # Step 2: Filter Records where "contact_job_status" equals "changed_jobs"
 def filter_records(df):

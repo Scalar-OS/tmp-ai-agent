@@ -6,3 +6,5 @@ python-dotenv==1.0.1
 requests==2.31.0
 urllib3==2.2.0
 pymongo==4.7.3
+pandas==2.2.1
+Levenshtein==0.25.1
