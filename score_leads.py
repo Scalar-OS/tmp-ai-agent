@@ -304,20 +304,7 @@ def main():
                         "score": scoring['score'], 
                         "summary_rationale": '\n'.join(list(map(lambda r: f"{'(+)' if r['direction'] == 'good' else '(-)' if r['direction'] == 'bad' else '(++)' if r['direction'] == 'very good' else '(--)' if  r['direction'] == 'very bad' else '(~)'} {r['text']}", scoring['rationale']))),
                         "full_rationale": ai_rationale,
-                        'new_company_oppty_stage': new_oppty["opportunity_stage"] if new_oppty is not None else None,
-                        'new_company_oppty_id': new_oppty["opportunity_id"] if new_oppty is not None else None,
-                        "new_company_oppty_created_date": new_oppty["opportunity_created_date"] if new_oppty is not None else None,
-                        'new_company_oppty_stage_date': new_oppty["opportunity_stage_date"] if new_oppty is not None else None,
-                        "new_companies": result['account']['Name'] if result['account'] is not None else company_name,
-                        "new_company_account_id": result['account']['Id'] if result['account'] is not None else None,
-                        "new_company_stage": result['account']['Account_stage__c'] if result['account'] is not None else None,
-                        "new_company_employees": result['account']['Rango_de_empleados__c'] if result['account'] is not None else None,
-                        "new_company_revenue": result['account']['Revenue_range__c'] if result['account'] is not None else None,
-                        "new_company_commercial_field": result['account']['Commercial_field__c'] if result['account'] is not None else None,
-                        "new_company_industry": result['account']['Industry_Goodfit__c'] if result['account'] is not None else None,
-                        "new_company_subindustry": result['account']['Subindustry__c'] if result['account'] is not None else None,
-                        "new_company_owner_id": result['account']['OwnerId'] if result['account'] is not None else None,
-                        "new_company_sdr_id": result['account']['SDR__c'] if result['account'] is not None else None,
+                        "new_companies": company_name,
                     }
                 }
             )
