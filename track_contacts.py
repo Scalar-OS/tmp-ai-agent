@@ -13,6 +13,7 @@ load_dotenv()
 mongo_client = MongoClient(os.environ.get('MONGO_CONNECTION_STRING'))
 db = mongo_client.get_database('scalar-sales')  # Replace with your database name
 contacts_collection = db.get_collection('contacts')
+leads_collection = db.get_collection('leads')
 
 
 # Function to process the given company ID
@@ -43,9 +44,9 @@ def process_company_contacts(company_id, user, password):
           processed_contact = process_crm_contact(contact_data, user, password)
           processed_contacts.append(processed_contact)
 
-      print("Processed Contacts:")
+      print("Storing leads")
       for contact in processed_contacts:
-          print(contact)
+          leads_collection.insert_one(contact)
     except Exception as e:
       print(f"An error occurred: {e}")
 
