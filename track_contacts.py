@@ -42,11 +42,9 @@ def process_company_contacts(company_id, user, password):
 
           # Process each contact
           processed_contact = process_crm_contact(contact_data, user, password)
-          processed_contacts.append(processed_contact)
-
-      print("Storing leads")
-      for contact in processed_contacts:
-          leads_collection.insert_one(contact)
+          processed_contact['company_id'] = account_object_id
+          leads_collection.insert_one(processed_contact)
+          
     except Exception as e:
       print(f"An error occurred: {e}")
 
