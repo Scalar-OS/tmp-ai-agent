@@ -3,6 +3,7 @@ from pymongo import MongoClient
 import re
 from dotenv import load_dotenv
 import os
+from explorer import getExperiences
 import json
 from openai import OpenAI
 import traceback
@@ -195,17 +196,12 @@ def main():
             final_opportunities = []
             company_name = clean_company_name(new_companies)
             
-            result = search_companies(db, company_name.strip())
-            new_oppty = result["last_oppty"]
+            #result = search_companies(db, company_name.strip())
 
-            if(result['account'] is not None and 'customer' in result['account']['Account_stage__c'].lower()):
-                scoring = {'score': 0, 'rationale': [{"direction": "very bad", "text": "Already a client"}]}
-                ai_rationale = 'The new company is already a client'
-            else:
-                context = json.dumps({"experiences": experiences, "crm_opportunities": result["last_oppty"], "target_company": company_name})
+            context = json.dumps({"experiences": experiences, "target_company": company_name})
 
-                system_prompt = """
-                    You are a world-class sales prospector. Your task is to assign a score from 0 to 100 to different leads, where 0 is the worst and 100 is the best, in order to prioritize them effectively. Here are the rules for scoring:
+            system_prompt = """
+                You are a world-class sales prospector. Your task is to assign a score from 0 to 100 to different leads, where 0 is the worst and 100 is the best, in order to prioritize them effectively. Here are the rules for scoring:
 
     Criteria for Scoring:
     You need to consider all the following as a whole and reason about the relevance towards scoring a lead. You will find that you have good things and bad things. 
@@ -266,20 +262,20 @@ def main():
     }
     Instructions for GPT-4o:
     Use the above criteria to analyze the provided JSON input and return the score and rationale as specified.
-               """
+                """
 
-                messages = [
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": context}
-                    ]
+            messages = [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": context}
+                ]
 
-                response = client.chat.completions.create(
-                    model="gpt-4o",
-                    messages=messages
-                )
+            response = client.chat.completions.create(
+                model="gpt-4o",
+                messages=messages
+            )
 
-                ai_rationale=response.choices[0].message.content
-                scoring = parse_json_from_chatgpt(response.choices[0].message.content)
+            ai_rationale=response.choices[0].message.content
+            scoring = parse_json_from_chatgpt(response.choices[0].message.content)
 
             leads_collection.update_one(
                 {"_id": row['_id']}, 
